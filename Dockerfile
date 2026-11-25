@@ -28,8 +28,10 @@ RUN mkdir -p /root/.pip \
 # اگر همروش اجازهٔ namespace ندهد، OpenMuse در حالت auto بی‌صدا بدون آن
 # کار می‌کند — این را در مرحلهٔ ۲ چک می‌کنیم (docs/features/sentinel.md).
 # tzdata: تا ساعت سیستم با TZ بالا یکی باشد.
+# nginx: دروازهٔ پورت 8000 — UI و WebSocket موتور + جنگو (deploy/nginx.conf).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bubblewrap \
+    nginx \
     tzdata \
  && rm -rf /var/lib/apt/lists/*
 
@@ -48,7 +50,8 @@ RUN chmod +x /entrypoint.sh
 RUN DEBUG=False SECRET_KEY="build-time-throwaway-key-not-used-at-runtime" \
     python manage.py collectstatic --noinput --clear \
  && DEBUG=False SECRET_KEY="build-time-throwaway-key-not-used-at-runtime" \
-    python manage.py check
+    python manage.py check \
+ && nginx -t -c /code/deploy/nginx.conf
 
 # پوشهٔ داده (دیتابیس‌های OpenMuse، Vault، فضای کار ایجنت). روی همروش
 # باید دیسک دائمی به /data وصل شود، وگرنه با هر ری‌استارت حافظه پاک می‌شود.

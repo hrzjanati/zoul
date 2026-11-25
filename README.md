@@ -14,8 +14,11 @@ cp .env.example .env        # DEEPSEEK_API_KEY را پر کن
 docker compose up --build
 ```
 
-- پنل: http://localhost:8000
-- وضعیت موتور: http://localhost:8000/engine/health/
+- اپ ایجنت (UI خود OpenMuse): http://localhost:8000/?token=<OPENMUSE_SERVER_TOKEN>
+- صفحهٔ وضعیت زول: http://localhost:8000/zoul/
+- ادمین: http://localhost:8000/admin/
+
+روی همروش: `https://zoul.darkube.ir/?token=...`
 
 ## ساختار
 
@@ -26,6 +29,7 @@ zoul/
 ├── engine/             پل به موتور OpenMuse
 │   ├── services/openmuse_client.py   تنها درگاه به API موتور
 │   └── openmuse/config.toml          تنظیمات موتور (مدل، Sentinel، کانکتورها)
+├── deploy/nginx.conf   دروازهٔ پورت 8000 (UI موتور + جنگو)
 ├── docs/               قوانین، معرفی پروژه و سند هر فیچر
 ├── Dockerfile، docker-compose.yml، docker-entrypoint.sh
 └── requirements.txt، .env.example، version.txt

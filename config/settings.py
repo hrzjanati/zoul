@@ -34,6 +34,10 @@ else:
         if host and host not in ALLOWED_HOSTS:
             ALLOWED_HOSTS.append(host)
 
+# جنگو پشت nginx و TLS همروش است؛ https بودن درخواست را از هدر می‌فهمد
+# (deploy/nginx.conf آن را می‌فرستد). بدون این، فرم ورود ادمین خطای CSRF می‌دهد.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
 ]

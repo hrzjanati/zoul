@@ -7,6 +7,7 @@
 | صفحهٔ اصلی و بررسی سلامت | ✅ ساخته شده | [home.md](home.md) |
 | موتور ایجنت (OpenMuse) | ✅ ساخته شده | [engine.md](engine.md) |
 | تأییدها و Sentinel | ✅ تنظیم شده | [sentinel.md](sentinel.md) |
+| دروازهٔ nginx و UI موتور | ✅ ساخته شده | [gateway.md](gateway.md) |
 | جیمیل و تقویم | ⏳ مرحلهٔ ۳ | |
 | انتخاب مدل و BYOK (LiteLLM) | ⏳ مرحلهٔ ۴ | |
 | تلگرام، واتساپ، اینستاگرام | ⏳ مرحلهٔ ۵ | |

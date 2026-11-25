@@ -1,10 +1,12 @@
 # اجرای لوکال: docker compose up --build
-# وب روی http://localhost:8000 ، موتور فقط داخل شبکهٔ داکر (engine:8787).
+# دقیقاً مثل همروش: یک کانتینر با nginx (:8000) + جنگو + موتور.
+#   UI ایجنت:   http://localhost:8000/?token=<OPENMUSE_SERVER_TOKEN>
+#   صفحهٔ زول:  http://localhost:8000/zoul/
+#   ادمین:      http://localhost:8000/admin/
 services:
-  web:
+  zoul:
     build: .
-    container_name: zoul_web
-    command: python manage.py runserver 0.0.0.0:8000
+    container_name: zoul
     volumes:
       - .:/code
       - zoul_data:/data
@@ -15,27 +17,7 @@ services:
         required: false
     environment:
       - DEBUG=True
-      # موتور سرویس جداست؛ این کانتینر نباید آن را هم راه بیندازد.
-      - RUN_ENGINE=0
-      - OPENMUSE_URL=http://engine:8787
-    depends_on:
-      - engine
-    restart: always
-
-  engine:
-    build: .
-    container_name: zoul_engine
-    command: openmuse serve --config /code/engine/openmuse/config.toml --no-qr
-    volumes:
-      - .:/code
-      - zoul_data:/data
-    env_file:
-      - path: .env
-        required: false
-    environment:
-      - SKIP_PREP=1
-      # داخل شبکهٔ داکر باید روی همه‌ی آدرس‌ها گوش بدهد تا web برسد.
-      - OPENMUSE_SERVER_HOST=0.0.0.0
+      - RUN_ENGINE=1
     restart: always
 
 volumes:

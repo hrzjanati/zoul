@@ -18,3 +18,8 @@ class HomeTests(SimpleTestCase):
             resp = self.client.get(reverse("home:index"))
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "موتور در دسترس نیست")
+
+    def test_index_lives_under_zoul_not_root(self):
+        # ریشه مال UI موتور است (nginx)؛ جنگو نباید روی / چیزی داشته باشد.
+        self.assertEqual(reverse("home:index"), "/zoul/")
+        self.assertEqual(self.client.get("/").status_code, 404)
