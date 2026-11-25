@@ -14,3 +14,7 @@ media/
 .DS_Store
 .idea/
 .vscode/
+
+# UI: در مرحلهٔ ui از نو نصب و ساخته می‌شود
+engine/web/node_modules/
+engine/web/dist/

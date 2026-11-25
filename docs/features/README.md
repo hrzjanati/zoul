@@ -8,6 +8,7 @@
 | موتور ایجنت (OpenMuse) | ✅ ساخته شده | [engine.md](engine.md) |
 | تأییدها و Sentinel | ✅ تنظیم شده | [sentinel.md](sentinel.md) |
 | دروازهٔ nginx و UI موتور | ✅ ساخته شده | [gateway.md](gateway.md) |
+| UI دوزبانه (فارسی/English) و راست‌به‌چپ | ✅ ساخته شده | [i18n.md](i18n.md) |
 | جیمیل و تقویم | ⏳ مرحلهٔ ۳ | |
 | انتخاب مدل و BYOK (LiteLLM) | ⏳ مرحلهٔ ۴ | |
 | تلگرام، واتساپ، اینستاگرام | ⏳ مرحلهٔ ۵ | |

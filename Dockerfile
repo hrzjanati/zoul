@@ -1,12 +1,31 @@
 # ======================================================================
-#  ایمیج زول: پنل جنگو + موتور OpenMuse در یک ایمیج
+#  ایمیج زول: nginx + پنل جنگو + موتور OpenMuse در یک ایمیج
 # ----------------------------------------------------------------------
 #  روی همروش یک کانتینر بالا می‌آید و docker-compose اجرا نمی‌شود؛ پس
-#  entrypoint هر دو پروسه را راه می‌اندازد (مثل حلقهٔ یادآوری «خانواده من»).
-#  لوکال، docker-compose هر کدام را سرویس جدا اجرا می‌کند.
+#  entrypoint هر سه پروسه را راه می‌اندازد (docs/features/gateway.md).
+# ======================================================================
+
+# ======================================================================
+#  مرحلهٔ ۱ — UI دوزبانهٔ زول (فارسی/English) از engine/web
+# ----------------------------------------------------------------------
+#  UI داخل پکیج pip انگلیسیِ از پیش ساخته است؛ این مرحله نسخهٔ فارسی‌شده
+#  را می‌سازد. تست‌ها (از جمله «هر متن UI ترجمهٔ فارسی دارد») قبل از build
+#  اجرا می‌شوند تا متن بی‌ترجمه هیچ‌وقت به سرور نرسد.
+#  مستند: docs/features/i18n.md
 # ======================================================================
 # میرور داخلی همروش، چون Docker Hub از داخل ایران قابل اتکا نیست.
-# پایتون ۳٫۱۳: بالاترین نسخه‌ای که OpenMuse 0.5.0 پشتیبانی می‌کند.
+FROM hub.hamdocker.ir/library/node:22-slim AS ui
+WORKDIR /ui
+COPY engine/web/package.json engine/web/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY engine/web/ ./
+RUN npm test && npm run build
+
+
+# ======================================================================
+#  مرحلهٔ ۲ — ایمیج نهایی
+# ======================================================================
+# پایتون ۳٫۱۳: بالاترین نسخه‌ای که OpenMuse 0.6.0 پشتیبانی می‌کند.
 FROM hub.hamdocker.ir/library/python:3.13-slim
 
 ENV PYTHONUNBUFFERED=1 \
@@ -42,6 +61,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.org/simple/
 
 COPY . .
+
+# UI دوزبانه جای UI انگلیسیِ داخل پکیج openmuse می‌نشیند (همان پوشه‌ای که
+# `openmuse serve` از آن سرو می‌کند).
+COPY --from=ui /ui/dist /opt/zoul-ui
+RUN STATIC="$(python -c 'import openmuse.server, pathlib; print(pathlib.Path(openmuse.server.__file__).parent / "static")')" \
+ && rm -rf "${STATIC:?}" && cp -r /opt/zoul-ui "$STATIC" && rm -rf /opt/zoul-ui \
+ && test -f "$STATIC/index.html"
 
 COPY docker-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
