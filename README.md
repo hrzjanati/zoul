@@ -1,0 +1,38 @@
+# زول (Zoul)
+
+ایجنت شخصی شبیه **Muse متا**: با کامپیوتر خودش کار می‌کند، بعد از بستن اپ هم ادامه می‌دهد، و قبل از هر کار برگشت‌ناپذیر (ارسال ایمیل و پیام، خرید) از من تأیید می‌گیرد.
+
+- **پنل:** جنگو (پایتون)، با همان ساختار «خانواده من».
+- **موتور ایجنت:** [OpenMuse](https://github.com/OpenMuseAgent/OpenMuse) 0.5.0 (MIT).
+- **مدل:** فعلاً DeepSeek. بعداً انتخاب بین Claude، Gemini، GPT و DeepSeek با کلید خود کاربر (BYOK).
+- **اجرا:** فقط Docker. میزبانی روی همروش (Darkube) با ۱ هسته و ۲ گیگ رم.
+
+## اجرای لوکال
+
+```bash
+cp .env.example .env        # DEEPSEEK_API_KEY را پر کن
+docker compose up --build
+```
+
+- پنل: http://localhost:8000
+- وضعیت موتور: http://localhost:8000/engine/health/
+
+## ساختار
+
+```
+zoul/
+├── config/             پروژهٔ جنگو (settings، urls، wsgi)
+├── home/               صفحهٔ اصلی و بررسی سلامت
+├── engine/             پل به موتور OpenMuse
+│   ├── services/openmuse_client.py   تنها درگاه به API موتور
+│   └── openmuse/config.toml          تنظیمات موتور (مدل، Sentinel، کانکتورها)
+├── docs/               قوانین، معرفی پروژه و سند هر فیچر
+├── Dockerfile، docker-compose.yml، docker-entrypoint.sh
+└── requirements.txt، .env.example، version.txt
+```
+
+## مستندات
+
+- [docs/RULES.md](docs/RULES.md): قوانین کار روی پروژه
+- [docs/PROJECT.md](docs/PROJECT.md): هدف، معماری، تصمیم‌ها و مراحل
+- [docs/features/](docs/features/README.md): برای هر فیچر یک فایل

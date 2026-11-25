@@ -1,0 +1,66 @@
+# ==========================================================================
+#  تنظیمات موتور OpenMuse برای زول — این فایل کامیت می‌شود
+# --------------------------------------------------------------------------
+#  هیچ رازی اینجا نیست. مقدارهای ${VAR} از متغیرهای محیطی خوانده می‌شوند
+#  (فرمت خود OpenMuse 0.5.0؛ openmuse/config.py) و رمزهای کانکتورها در
+#  Vault به شکل {{vault:NAME}} نگه داشته می‌شوند — مدل هیچ‌وقت مقدارشان
+#  را نمی‌بیند.
+#
+#  مستند: docs/features/engine.md و docs/features/sentinel.md
+# ==========================================================================
+
+data_dir = "${OPENMUSE_DATA_DIR:-/data/openmuse}"
+log_level = "INFO"
+
+# ---------- مدل ----------
+# شروع با DeepSeek (از ایران معمولاً در دسترس است). کلید از DEEPSEEK_API_KEY
+# خوانده می‌شود؛ نام مدل با OPENMUSE_LLM_MODEL عوض می‌شود.
+[llm]
+provider = "openai"
+base_url = "${OPENMUSE_LLM_BASE_URL:-https://api.deepseek.com}"
+api_key = "${DEEPSEEK_API_KEY}"
+# DeepSeek عکس قبول نمی‌کند؛ از اول خاموش تا یک درخواست هدر نرود.
+vision = "off"
+
+[agent]
+name = "Zoul"
+workspace = "${OPENMUSE_WORKSPACE:-/data/workspace}"
+# به زبان کاربر جواب بده (فارسی ← فارسی).
+language = "auto"
+max_steps = 30
+
+# ---------- Sentinel: دروازهٔ هر کار ----------
+# ask: کارهای حساس (برگشت‌ناپذیر یا بیرونی) همیشه تأیید می‌خواهند.
+[sentinel]
+mode = "ask"
+# این ابزارها بدون تأیید من هرگز اجرا نمی‌شوند، حتی اگر Sentinel آن‌ها را کم‌خطر بداند.
+always_ask_tools = ["send_email", "shell", "python_execute", "browser", "forget"]
+# بعد از خواندن داده‌ی خصوصی، رفتن به دامنه‌ای خارج از فهرست مجاز تأیید می‌خواهد.
+taint_tracking = true
+
+# ---------- ایزوله‌سازی shell/Python ----------
+# auto: اگر bubblewrap روی سرور کار کند استفاده می‌شود. روی همروش باید
+# چک شود (مرحلهٔ ۲)؛ اگر کار نکرد، shell همچنان پشت always_ask است.
+[sandbox]
+mode = "auto"
+
+# ---------- کانکتورها ----------
+# فعلاً همه خاموش. جیمیل و تقویم در مرحلهٔ ۳ (با اکانت تست) روشن می‌شوند.
+[connectors.email]
+enabled = false
+
+[connectors.calendar]
+enabled = false
+
+[browser]
+# Chromium با ۲ گیگ رم ریسک دارد؛ فعلاً خاموش.
+enabled = false
+
+[skills]
+dir = "/code/engine/openmuse/skills"
+
+[server]
+# فقط داخل کانتینر؛ جنگو از راه 127.0.0.1 با آن حرف می‌زند.
+host = "${OPENMUSE_SERVER_HOST:-127.0.0.1}"
+port = 8787
+auth = true
