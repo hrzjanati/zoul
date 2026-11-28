@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if ok %}گوگل وصل شد{% else %}اتصال گوگل انجام نشد{% endif %} · زول</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px;
+           font-family: "Vazirmatn", Tahoma, system-ui, sans-serif; background: #fcfcfc; color: #181819; }
+    @media (prefers-color-scheme: dark) { body { background: #181819; color: #f2f2f2; } }
+    main { max-width: 380px; text-align: center; }
+    .icon { font-size: 48px; }
+    h1 { font-size: 22px; margin: 12px 0 8px; }
+    p { color: #777; line-height: 1.8; margin: 0 0 20px; }
+    bdi { color: inherit; }
+    a { display: inline-block; padding: 12px 28px; border-radius: 999px; background: #0064d4; color: #fff;
+        text-decoration: none; font-weight: 600; }
+    .en { margin-top: 16px; font-size: 13px; color: #999; direction: ltr; }
+  </style>
+</head>
+<body>
+  <main>
+    {% if ok %}
+      <div class="icon">✅</div>
+      <h1>گوگل وصل شد</h1>
+      <p>حساب <bdi dir="ltr">{{ email }}</bdi> به زول وصل شد. حالا زول می‌تواند جیمیل، درایو، شیت، داکس، تقویم، مخاطبین و تسک‌هایت را بخواند؛ هر ارسال یا تغییری اول از تو تأیید می‌گیرد.</p>
+      <a href="/">برگشت به زول</a>
+      <div class="en">Google is connected — back to Zoul.</div>
+    {% else %}
+      <div class="icon">⚠️</div>
+      <h1>اتصال گوگل انجام نشد</h1>
+      <p>{{ error }}</p>
+      <a href="/">برگشت به زول</a>
+      <div class="en">Google was not connected. Try Connect again from Zoul.</div>
+    {% endif %}
+  </main>
+</body>
+</html>

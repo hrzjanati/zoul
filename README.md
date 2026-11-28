@@ -27,6 +27,7 @@ docker compose up --build
 zoul/
 ├── config/             پروژهٔ جنگو (settings، urls، wsgi)
 ├── home/               صفحهٔ اصلی و بررسی سلامت
+├── connectors/         اتصال یک‌کلیکی گوگل + سرورهای MCP آن
 ├── engine/             پل به موتور OpenMuse
 │   ├── services/openmuse_client.py   تنها درگاه به API موتور
 │   ├── openmuse/config.toml          تنظیمات موتور (مدل، Sentinel، کانکتورها)

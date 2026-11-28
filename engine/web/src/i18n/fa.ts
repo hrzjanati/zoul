@@ -9,6 +9,23 @@ const fa: Record<string, string> = {
   Zoul: "زول",
   "{name} avatar": "آواتار {name}",
 
+  // ── Google (زول) ────────────────────────────────────────────────────────────────
+  Google: "گوگل",
+  "Gmail, Drive, Sheets, Docs, Calendar, Contacts, Tasks": "جیمیل، درایو، شیت، داکس، تقویم، مخاطبین، تسک‌ها",
+  Gmail: "جیمیل",
+  Drive: "درایو",
+  Sheets: "شیت",
+  Docs: "داکس",
+  Tasks: "تسک‌ها",
+  "Reading is free; sending mail and every create or change asks you first. The key stays encrypted on your server — the model never sees it.":
+    "خواندن آزاد است؛ ارسال ایمیل و هر ساختن یا تغییری اول از تو تأیید می‌گیرد. کلید رمزنگاری‌شده روی سرور خودت می‌ماند — مدل هرگز آن را نمی‌بیند.",
+  "Google is not set up on the server yet: GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET are missing. Redirect URI:":
+    "گوگل هنوز روی سرور تنظیم نشده: GOOGLE_OAUTH_CLIENT_ID و GOOGLE_OAUTH_CLIENT_SECRET نیستند. آدرس برگشت:",
+  Reconnect: "اتصال دوباره",
+  "Connect Google": "اتصال به گوگل",
+  "Disconnect Google? Zoul will no longer reach your Gmail, Drive and the rest.":
+    "اتصال گوگل قطع شود؟ زول دیگر به جیمیل، درایو و بقیه دسترسی نخواهد داشت.",
+
   // ── Shell, tabs, connection ─────────────────────────────────────────────────────────
   "Chat": "گفتگو",
   "Feed": "فید",

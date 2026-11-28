@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # Local Apps — هر اپ یک سند در docs/features/ دارد.
     "home",    # صفحهٔ اصلی و بررسی سلامت  ← docs/features/home.md
     "engine",  # پل به موتور OpenMuse      ← docs/features/engine.md
+    "connectors",  # اتصال یک‌کلیکی گوگل و ابزارهای MCP آن ← docs/features/google.md
 ]
 
 MIDDLEWARE = [
@@ -135,3 +136,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 OPENMUSE_URL = os.environ.get("OPENMUSE_URL", "http://127.0.0.1:8787").rstrip("/")
 OPENMUSE_SERVER_TOKEN = os.environ.get("OPENMUSE_SERVER_TOKEN", "")
 OPENMUSE_TIMEOUT = float(os.environ.get("OPENMUSE_TIMEOUT", "5"))
+
+# ---------- آدرس عمومی زول ----------
+# برای ساختن آدرس برگشت OAuth (باید دقیقاً همانی باشد که در Google Cloud ثبت شده).
+PUBLIC_URL = os.environ.get("ZOUL_PUBLIC_URL", "https://zoul.darkube.ir").rstrip("/")
+
+# ---------- اتصال گوگل (connectors) ----------
+# از Google Cloud ← Clients (Web application). در همروش «متغیر محیطی امن».
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
+GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", "")

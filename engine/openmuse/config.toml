@@ -34,7 +34,7 @@ max_steps = 30
 [sentinel]
 mode = "ask"
 # این ابزارها بدون تأیید من هرگز اجرا نمی‌شوند، حتی اگر Sentinel آن‌ها را کم‌خطر بداند.
-always_ask_tools = ["send_email", "shell", "python_execute", "browser", "forget"]
+always_ask_tools = ["send_email", "shell", "python_execute", "browser", "forget", "google_write__*"]
 # بعد از خواندن داده‌ی خصوصی، رفتن به دامنه‌ای خارج از فهرست مجاز تأیید می‌خواهد.
 taint_tracking = true
 
@@ -58,6 +58,28 @@ enabled = false
 
 [skills]
 dir = "/code/engine/openmuse/skills"
+
+# ---------- گوگل: جیمیل، درایو، شیت، داکس، تقویم، مخاطبین، تسک‌ها ----------
+# اتصال با یک کلیک از UI (اتصال‌ها ← گوگل)؛ توکن در دیتابیس جنگو، رمزنگاری‌شده.
+# دو سرور جدا تا خواندن و نوشتن سیاست جدا داشته باشند (docs/features/google.md).
+# env خالی نیست عمداً: OpenMuse فقط وقتی env دارد کل محیط (SECRET_KEY، دیتابیس) را
+# به پروسهٔ MCP می‌دهد؛ بدون آن جنگو داخل سرور MCP بالا نمی‌آید.
+[[mcp.servers]]
+name = "google"
+command = "python"
+args = ["/code/manage.py", "google_mcp", "--mode", "read"]
+env = { ZOUL_MCP = "google-read" }
+risk = "moderate"
+reads_private_data = true
+
+[[mcp.servers]]
+name = "google_write"
+command = "python"
+args = ["/code/manage.py", "google_mcp", "--mode", "write"]
+env = { ZOUL_MCP = "google-write" }
+# هر نوشتن همیشه تأیید می‌خواهد (always_ask_tools بالا: google_write__*).
+risk = "sensitive"
+egress = true
 
 [server]
 # فقط داخل کانتینر؛ جنگو از راه 127.0.0.1 با آن حرف می‌زند.

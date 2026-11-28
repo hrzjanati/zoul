@@ -103,7 +103,21 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 const json = (body: unknown): RequestInit => ({ method: "POST", body: JSON.stringify(body) });
 
+/** زول: اتصال یک‌کلیکی گوگل (جنگو، /connectors/google/*). docs/features/google.md */
+export interface GoogleStatus {
+  configured: boolean;
+  connected: boolean;
+  email: string;
+  name: string;
+  connected_at: string | null;
+  products: Record<"gmail" | "drive" | "sheets" | "docs" | "calendar" | "contacts" | "tasks", boolean>;
+  redirect_uri: string;
+}
+
 export const api = {
+  googleStatus: () => request<GoogleStatus>("/connectors/google/status"),
+  googleStart: () => request<{ url: string }>("/connectors/google/start", { method: "POST" }),
+  googleDisconnect: () => request<{ disconnected: boolean }>("/connectors/google/disconnect", { method: "POST" }),
   state: () => request<StateSnapshot>("/api/state"),
   health: () => request<{ ok: boolean; version: string; auth: boolean }>("/api/health"),
   threads: () => request<ThreadMeta[]>("/api/threads"),

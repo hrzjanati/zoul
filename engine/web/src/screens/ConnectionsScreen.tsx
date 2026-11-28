@@ -19,7 +19,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { api } from "../api";
+import { api, type GoogleStatus } from "../api";
 import { BackBar } from "../components/BackBar";
 import { useT } from "../i18n";
 import { useStore } from "../store";
@@ -70,6 +70,7 @@ export function ConnectionsScreen() {
         {data && (
           <>
             <ModelCard data={data} onChange={load} />
+            <GoogleCard />
             {data.embeddings.memory_enabled && <RecallCard data={data} onChange={load} />}
             <SearchCard data={data} onChange={load} />
             <EmailCard data={data} onChange={load} />
@@ -1073,6 +1074,144 @@ function BrowserCard({ data, onChange }: { data: ConnectionsData; onChange: () =
         </p>
       )}
     </Card>
+  );
+}
+
+// ------------------------------------------------------------------ google (زول)
+const GOOGLE_PRODUCTS: Array<{ key: keyof GoogleStatus["products"]; label: string }> = [
+  { key: "gmail", label: "Gmail" },
+  { key: "drive", label: "Drive" },
+  { key: "sheets", label: "Sheets" },
+  { key: "docs", label: "Docs" },
+  { key: "calendar", label: "Calendar" },
+  { key: "contacts", label: "Contacts" },
+  { key: "tasks", label: "Tasks" },
+];
+
+/**
+ * One tap, like Claude: Connect opens Google's consent page, Allow brings you back connected.
+ * The token stays encrypted in Zoul's database; reading is free, every change asks first.
+ */
+function GoogleCard() {
+  const { toast } = useStore();
+  const t = useT();
+  const [g, setG] = useState<GoogleStatus | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      setG(await api.googleStatus());
+    } catch {
+      setG(null);
+    }
+  }, []);
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const connect = async () => {
+    setBusy(true);
+    try {
+      const { url } = await api.googleStart();
+      window.location.href = url;
+    } catch (e) {
+      toast(errorText(e));
+      setBusy(false);
+    }
+  };
+  const disconnect = async () => {
+    if (!window.confirm(t("Disconnect Google? Zoul will no longer reach your Gmail, Drive and the rest."))) return;
+    setBusy(true);
+    try {
+      await api.googleDisconnect();
+      await load();
+    } catch (e) {
+      toast(errorText(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!g) return null;
+  const status = g.connected
+    ? { text: t("Connected"), tone: "ok" }
+    : g.configured
+      ? { text: t("Not connected"), tone: "off" }
+      : { text: t("Not set up"), tone: "warn" };
+  const summary = g.connected ? g.email : t("Gmail, Drive, Sheets, Docs, Calendar, Contacts, Tasks");
+
+  return (
+    <Card
+      icon={<GoogleMark />}
+      title={t("Google")}
+      summary={summary}
+      status={status}
+      open={open}
+      onToggle={() => setOpen(!open)}
+    >
+      <div className="flex flex-wrap gap-1.5">
+        {GOOGLE_PRODUCTS.map((p) => (
+          <span
+            key={p.key}
+            className={cx(
+              "flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px]",
+              g.products[p.key] ? "bg-emerald-500/12 text-emerald-700 dark:text-emerald-300" : "bg-surface-2 text-muted",
+            )}
+          >
+            {g.products[p.key] && <Check size={12} />}
+            {t(p.label)}
+          </span>
+        ))}
+      </div>
+      <p className="text-[12.5px] text-muted leading-relaxed">
+        {t("Reading is free; sending mail and every create or change asks you first. The key stays encrypted on your server — the model never sees it.")}
+      </p>
+      {!g.configured && (
+        <p className="rounded-2xl bg-amber-500/12 p-3 text-[12.5px] text-amber-700 dark:text-amber-300 leading-relaxed">
+          {t("Google is not set up on the server yet: GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET are missing. Redirect URI:")}{" "}
+          <code className="break-all">{g.redirect_uri}</code>
+        </p>
+      )}
+      <div className="flex gap-2">
+        {g.connected ? (
+          <>
+            <button type="button" disabled={busy} onClick={() => void connect()} className={secondaryBtn}>
+              <RefreshCw size={15} /> {t("Reconnect")}
+            </button>
+            <button type="button" disabled={busy} onClick={() => void disconnect()} className={secondaryBtn}>
+              <Unplug size={15} /> {t("Disconnect")}
+            </button>
+          </>
+        ) : (
+          <button type="button" disabled={busy || !g.configured} onClick={() => void connect()} className={cx(primaryBtn, "flex-1")}>
+            {busy ? <Loader2 size={15} className="animate-spin" /> : <Plug size={15} />} {t("Connect Google")}
+          </button>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+function errorText(e: unknown): string {
+  const msg = (e as Error).message ?? String(e);
+  try {
+    const data = JSON.parse(msg) as { error?: string };
+    return data.error ?? msg;
+  } catch {
+    return msg;
+  }
+}
+
+/** The four-colour G, drawn inline (no external image). */
+function GoogleMark() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.8c4.3-4 6.9-9.9 6.9-17.2z" />
+      <path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.7l7.9-6.1z" />
+      <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.8c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z" />
+    </svg>
   );
 }
 
